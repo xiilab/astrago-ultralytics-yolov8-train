@@ -35,6 +35,7 @@ from ultralytics.utils import (
     emojis,
     yaml_save,
 )
+from ultralytics.utils.astrago import Astrago
 from ultralytics.utils.autobatch import check_train_batch_size
 from ultralytics.utils.checks import check_amp, check_file, check_imgsz, check_model_file_from_stem, print_args
 from ultralytics.utils.dist import ddp_cleanup, generate_ddp_command
@@ -341,7 +342,16 @@ class BaseTrainer:
             base_idx = (self.epochs - self.args.close_mosaic) * nb
             self.plot_idx.extend([base_idx, base_idx + 1, base_idx + 2])
         epoch = self.epochs  # predefine for resume fully trained model edge cases
-        for epoch in range(self.start_epoch, self.epochs):
+        
+        Astrago.get_gpu_info()
+        Astrago.get_gpu_memory_usage()
+        Astrago.get_cpu_usage()
+        Astrago.get_model_params(self.model)
+        Astrago.get_data_info_yolo(self.args.data)
+        Astrago.get_image_size(self.args.imgsz)
+        Astrago.get_batch_size(self.batch_size)
+        for epoch in Astrago(range(self.start_epoch, self.epochs)):
+            start_time = time.time()
             self.epoch = epoch
             self.run_callbacks("on_train_epoch_start")
             self.model.train()
@@ -358,6 +368,9 @@ class BaseTrainer:
                 pbar = TQDM(enumerate(self.train_loader), total=nb)
             self.tloss = None
             self.optimizer.zero_grad()
+            Astrago.get_elapsed_preprocess_time(start_time)
+            
+            start_time = time.time()
             for i, batch in pbar:
                 self.run_callbacks("on_train_batch_start")
                 # Warmup
@@ -372,7 +385,7 @@ class BaseTrainer:
                         )
                         if "momentum" in x:
                             x["momentum"] = np.interp(ni, xi, [self.args.warmup_momentum, self.args.momentum])
-
+                
                 # Forward
                 with torch.cuda.amp.autocast(self.amp):
                     batch = self.preprocess_batch(batch)
@@ -382,7 +395,7 @@ class BaseTrainer:
                     self.tloss = (
                         (self.tloss * i + self.loss_items) / (i + 1) if self.tloss is not None else self.loss_items
                     )
-
+                
                 # Backward
                 self.scaler.scale(self.loss).backward()
 
@@ -400,7 +413,7 @@ class BaseTrainer:
                             self.stop = broadcast_list[0]
                         if self.stop:  # training time exceeded
                             break
-
+                
                 # Log
                 mem = f"{torch.cuda.memory_reserved() / 1E9 if torch.cuda.is_available() else 0:.3g}G"  # (GB)
                 loss_len = self.tloss.shape[0] if len(self.tloss.size()) else 1
@@ -413,11 +426,14 @@ class BaseTrainer:
                     self.run_callbacks("on_batch_end")
                     if self.args.plots and ni in self.plot_idx:
                         self.plot_training_samples(batch, ni)
-
+                        
                 self.run_callbacks("on_train_batch_end")
-
+            
             self.lr = {f"lr/pg{ir}": x["lr"] for ir, x in enumerate(self.optimizer.param_groups)}  # for loggers
             self.run_callbacks("on_train_epoch_end")
+            Astrago.get_elapsed_train_time(start_time)
+            
+            start_time = time.time()
             if RANK in (-1, 0):
                 final_epoch = epoch + 1 == self.epochs
                 self.ema.update_attr(self.model, include=["yaml", "nc", "args", "names", "stride", "class_weights"])
@@ -429,12 +445,16 @@ class BaseTrainer:
                 self.stop |= self.stopper(epoch + 1, self.fitness)
                 if self.args.time:
                     self.stop |= (time.time() - self.train_time_start) > (self.args.time * 3600)
-
+                Astrago.get_elapsed_val_time(start_time)
+                
+                start_time = time.time()
                 # Save model
                 if self.args.save or final_epoch:
                     self.save_model()
                     self.run_callbacks("on_model_save")
-
+            Astrago.get_elapsed_savemodel_time(start_time)
+            
+            
             # Scheduler
             t = time.time()
             self.epoch_time = t - self.epoch_time_start
@@ -450,7 +470,9 @@ class BaseTrainer:
                 self.scheduler.step()
             self.run_callbacks("on_fit_epoch_end")
             torch.cuda.empty_cache()  # clear GPU memory at end of epoch, may help reduce CUDA out of memory errors
-
+            Astrago.get_elapsed_scheduler_time(t)
+            
+            
             # Early Stopping
             if RANK != -1:  # if DDP training
                 broadcast_list = [self.stop if RANK == 0 else None]
@@ -458,6 +480,7 @@ class BaseTrainer:
                 self.stop = broadcast_list[0]
             if self.stop:
                 break  # must break all DDP ranks
+            #p.update(1)
 
         if RANK in (-1, 0):
             # Do final val with best.pt

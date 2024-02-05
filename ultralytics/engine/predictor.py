@@ -34,7 +34,9 @@ from pathlib import Path
 import cv2
 import numpy as np
 import torch
+import time
 
+from ultralytics.utils.astrago import Inference
 from ultralytics.cfg import get_cfg, get_save_dir
 from ultralytics.data import load_inference_source
 from ultralytics.data.augment import LetterBox, classify_transforms
@@ -239,6 +241,7 @@ class BasePredictor:
         self.vid_writer = [None] * self.dataset.bs
         self.vid_frame = [None] * self.dataset.bs
 
+
     @smart_inference_mode()
     def stream_inference(self, source=None, model=None, *args, **kwargs):
         """Streams real-time inference on camera feed and saves results to file."""
@@ -248,7 +251,8 @@ class BasePredictor:
         # Setup model
         if not self.model:
             self.setup_model(model)
-
+        
+        
         with self._lock:  # for thread-safe inference
             # Setup source every time predict is called
             self.setup_source(source if source is not None else self.args.source)
@@ -265,11 +269,23 @@ class BasePredictor:
             self.seen, self.windows, self.batch, profilers = 0, [], None, (ops.Profile(), ops.Profile(), ops.Profile())
             self.run_callbacks("on_predict_start")
 
-            for batch in self.dataset:
+            Inference.get_model_params(self.model)
+            Inference.get_data_num(self.dataset)
+            Inference.get_image_size(self.imgsz[0])
+            Inference.get_gpu_info()
+            Inference.get_gpu_memory_usage()
+            Inference.get_cpu_usage()
+            
+            
+            for i in Inference(range(len(self.dataset))):
                 self.run_callbacks("on_predict_batch_start")
+                batch = next(iter(self.dataset))
                 self.batch = batch
                 path, im0s, vid_cap, s = batch
+                
+                time.sleep(1)
 
+                start_time = time.time()
                 # Preprocess
                 with profilers[0]:
                     im = self.preprocess(im0s)
@@ -286,7 +302,11 @@ class BasePredictor:
                     self.results = self.postprocess(preds, im, im0s)
 
                 self.run_callbacks("on_predict_postprocess_end")
+                Inference.get_elapsed_inference_time(start_time)
+                
+                
                 # Visualize, save, write results
+                start_time = time.time()
                 n = len(im0s)
                 for i in range(n):
                     self.seen += 1
@@ -309,6 +329,7 @@ class BasePredictor:
 
                 self.run_callbacks("on_predict_batch_end")
                 yield from self.results
+                Inference.get_elapsed_save_time(start_time)
 
                 # Print time (inference-only)
                 if self.args.verbose:

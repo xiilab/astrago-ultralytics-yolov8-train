@@ -15,12 +15,14 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Union
 
+import time
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import yaml
 from tqdm import tqdm as tqdm_original
+from tqdm.utils import disp_trim
 
 from ultralytics import __version__
 
@@ -121,6 +123,7 @@ class TQDM(tqdm_original):
         kwargs["disable"] = not VERBOSE or kwargs.get("disable", False)  # logical 'and' with default value if passed
         kwargs.setdefault("bar_format", TQDM_BAR_FORMAT)  # override default value if passed
         super().__init__(*args, **kwargs)
+        
 
 
 class SimpleClass:
