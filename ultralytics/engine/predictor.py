@@ -212,7 +212,7 @@ class BasePredictor:
         It uses always generator as outputs as not required by CLI mode.
         """
         gen = self.stream_inference(source, model)
-        for _ in gen:  # running CLI inference without accumulating any outputs (do not modify)
+        for _ in gen:  # noqa, running CLI inference without accumulating any outputs (do not modify)
             pass
 
     def setup_source(self, source):
@@ -228,7 +228,7 @@ class BasePredictor:
             else None
         )
         self.dataset = load_inference_source(
-            source=source, imgsz=self.imgsz, vid_stride=self.args.vid_stride, buffer=self.args.stream_buffer
+            source=source, vid_stride=self.args.vid_stride, buffer=self.args.stream_buffer
         )
         self.source_type = self.dataset.source_type
         if not getattr(self, "stream", True) and (
@@ -266,8 +266,14 @@ class BasePredictor:
                 self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs, 3, *self.imgsz))
                 self.done_warmup = True
 
-            self.seen, self.windows, self.batch, profilers = 0, [], None, (ops.Profile(), ops.Profile(), ops.Profile())
+            self.seen, self.windows, self.batch = 0, [], None
+            profilers = (
+                ops.Profile(device=self.device),
+                ops.Profile(device=self.device),
+                ops.Profile(device=self.device),
+            )
             self.run_callbacks("on_predict_start")
+<<<<<<< HEAD
 
             Inference.get_model_params(self.model)
             Inference.get_data_num(self.dataset)
@@ -278,6 +284,9 @@ class BasePredictor:
             
             
             for i in Inference(range(len(self.dataset))):
+=======
+            for batch in self.dataset:
+>>>>>>> c26e497eec54b7e72db9c17dd9f31fc9fd26826c
                 self.run_callbacks("on_predict_batch_start")
                 batch = next(iter(self.dataset))
                 self.batch = batch

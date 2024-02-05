@@ -14,7 +14,7 @@ Training a deep learning model involves feeding it data and adjusting its parame
 
 <p align="center">
   <br>
-  <iframe width="720" height="405" src="https://www.youtube.com/embed/LNwODJXcvt4?si=7n1UvGRLSd9p5wKs"
+  <iframe loading="lazy" width="720" height="405" src="https://www.youtube.com/embed/LNwODJXcvt4?si=7n1UvGRLSd9p5wKs"
     title="YouTube video player" frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowfullscreen>
@@ -241,6 +241,7 @@ To use Comet:
 !!! Example
 
     === "Python"
+
         ```python
         # pip install comet_ml
         import comet_ml
@@ -259,6 +260,7 @@ To use ClearML:
 !!! Example
 
     === "Python"
+
         ```python
         # pip install clearml
         import clearml
@@ -277,6 +279,7 @@ To use TensorBoard in [Google Colab](https://colab.research.google.com/github/ul
 !!! Example
 
     === "CLI"
+
         ```bash
         load_ext tensorboard
         tensorboard --logdir ultralytics/runs  # replace with 'runs' directory
@@ -287,6 +290,7 @@ To use TensorBoard locally run the below command and view results at http://loca
 !!! Example
 
     === "CLI"
+
         ```bash
         tensorboard --logdir ultralytics/runs  # replace with 'runs' directory
         ```

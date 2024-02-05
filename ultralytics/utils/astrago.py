@@ -362,6 +362,7 @@ class Inference(tqdm):
         save_time = Inference.save_time
         single_data_inference_time = inference_time + save_time
 
+        if total
         
         # 마지막 에폭만 두 번 출력되고 저장되는 경우가 있어 임시 해결책
         if n == total:
