@@ -4,6 +4,7 @@ Yolov8 train
 import os
 import argparse
 from ultralytics import YOLO
+from ultralytics.utils.make_folder import make_unique_folder
 
 #model freeze
 def freeze_layer(trainer):
@@ -17,21 +18,6 @@ def freeze_layer(trainer):
             print(f'freezing {k}') 
             v.requires_grad = False 
     print(f"{num_freeze} layers are freezed.")
-
-
-#save dir filter same folder
-def make_unique_folder(path):
-    path = path.rstrip("/")
-    folder_name = os.path.basename(path)
-    folder_path = os.path.dirname(path)
-    new_folder_path = path
-    i = 1
-    while os.path.exists(new_folder_path): 
-        new_folder_name = f"{folder_name}_{i}"
-        new_folder_path = os.path.join(folder_path, new_folder_name)
-        i += 1
-    os.makedirs(new_folder_path)
-    return new_folder_path
 
 
 def trainer(config) :

@@ -152,7 +152,7 @@ class Astrago(tqdm):
         Astrago.scheduler_time = time.time() - start_time
     
 
-    # 모델 predict 시 사용하고 있는 gpu 정보
+    # 모델 train 시 사용하고 있는 gpu 정보
     def get_gpu_info():
         current_gpu = torch.cuda.current_device()
         gpu_name = torch.cuda.get_device_name(current_gpu)
@@ -195,7 +195,7 @@ class Astrago(tqdm):
         
     
     
-    # 모델 predict 시, input image 사이즈 추출 함수     
+    # 모델 train 시, input image 사이즈 추출 함수     
     def get_image_size(image_size_argument):
         image_size = image_size_argument
         print(f'\n[Image Size]')
@@ -203,7 +203,7 @@ class Astrago(tqdm):
         Astrago.image_size = image_size
     
     
-    # 모델 predict 시, 배치 사이즈 추출 함수
+    # 모델 train 시, 배치 사이즈 추출 함수
     def get_batch_size(batch_argument):
         batch_size = batch_argument
         print(f'\n[Batch Size]')
@@ -362,34 +362,34 @@ class Inference(tqdm):
         save_time = Inference.save_time
         single_data_inference_time = inference_time + save_time
 
-        if total
+        if total != 1:
         
-        # 마지막 에폭만 두 번 출력되고 저장되는 경우가 있어 임시 해결책
-        if n == total:
-            if not hasattr(Inference, 'last_epoch_done') or not Inference.last_epoch_done:  # 마지막 에폭이 한 번만 출력되도록 확인하는 변수
+            # 마지막 에폭만 두 번 출력되고 저장되는 경우가 있어 임시 해결책
+            if n == total:
+                if not hasattr(Inference, 'last_epoch_done') or not Inference.last_epoch_done:  # 마지막 에폭이 한 번만 출력되도록 확인하는 변수
+                    Inference.save_metrics_to_csv(Inference.model_name, Inference.param, Inference.gpu, Inference.FLOPS, data_num, imgsz, n,
+                                                inference_time, save_time, single_data_inference_time, gpu_usage, cpu_usage)
+                    
+                    print(f'\n현재 진행 순번> {n}/{total}')
+                    print(f'inference time > {inference_time}')
+                    print(f'save time > {save_time}')
+                    print(f'이미지 1장 당 추론 시간 > {single_data_inference_time}')
+                    print(f'GPU 메모리 사용량: {gpu_usage:.2f}G')
+                    print(f'CPU 메모리 사용율: {cpu_usage:.2f}%')
+                    Inference.last_epoch_done = True  # 마지막 에폭이 출력되었음을 표시
+                    
+
+            else:  # 마지막 에폭이 아닐 때는 출력 및 저장을 수행
                 Inference.save_metrics_to_csv(Inference.model_name, Inference.param, Inference.gpu, Inference.FLOPS, data_num, imgsz, n,
-                                              inference_time, save_time, single_data_inference_time, gpu_usage, cpu_usage)
-                
+                                            inference_time, save_time,  single_data_inference_time, gpu_usage, cpu_usage)
+                    
                 print(f'\n현재 진행 순번> {n}/{total}')
                 print(f'inference time > {inference_time}')
                 print(f'save time > {save_time}')
                 print(f'이미지 1장 당 추론 시간 > {single_data_inference_time}')
                 print(f'GPU 메모리 사용량: {gpu_usage:.2f}G')
                 print(f'CPU 메모리 사용율: {cpu_usage:.2f}%')
-                Inference.last_epoch_done = True  # 마지막 에폭이 출력되었음을 표시
-                
-
-        else:  # 마지막 에폭이 아닐 때는 출력 및 저장을 수행
-            Inference.save_metrics_to_csv(Inference.model_name, Inference.param, Inference.gpu, Inference.FLOPS, data_num, imgsz, n,
-                                          inference_time, save_time,  single_data_inference_time, gpu_usage, cpu_usage)
-                
-            print(f'\n현재 진행 순번> {n}/{total}')
-            print(f'inference time > {inference_time}')
-            print(f'save time > {save_time}')
-            print(f'이미지 1장 당 추론 시간 > {single_data_inference_time}')
-            print(f'GPU 메모리 사용량: {gpu_usage:.2f}G')
-            print(f'CPU 메모리 사용율: {cpu_usage:.2f}%')
-                
+                    
 
         return tqdm.format_meter(n, total, elapsed, rate=rate, initial=initial, *args, **kwargs)
     
