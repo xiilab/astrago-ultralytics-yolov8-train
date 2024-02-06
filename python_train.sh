@@ -11,7 +11,7 @@ CUDA_VISIBLE_DEVICES=$GPU python train.py \
 	--model $MODEL \
 	--model_pt $PRETRAIN \
 	--image_size 640 \
-	--epochs 500 \
+	--epochs 100 \
 	--batch_size 2 \
 	--learning_rate 0.01 \
 	--save_model_dir $SAVE_DIR

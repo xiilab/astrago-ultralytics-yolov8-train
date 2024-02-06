@@ -7,7 +7,7 @@ from ultralytics.utils.make_folder import make_unique_folder
 from ultralytics import YOLO
 
 def inference(config) :
-    new_folder = make_unique_folder(config['save_dir'])
+    new_folder_path, new_folder_name = make_unique_folder(os.path.join(config['save_dir'],"result_pred"))
     model = YOLO(config['weights'])  # pretrained YOLOv8n model
     model.predict(
         source=config['data_dir'],
@@ -18,11 +18,11 @@ def inference(config) :
         save_conf=True, 
         show_boxes=True,
         show_labels=True,
-        name=new_folder,
+        project=config['save_dir'],
+        name=new_folder_name,
         save_frames=True
         #stream=True # derectory
         )
-    print(f"save_dir: {new_folder}")
     
     
 def parse_args():

@@ -21,8 +21,9 @@ def freeze_layer(trainer):
 
 
 def trainer(config) :
-    new_folder = make_unique_folder(config['save_model_dir'])
-    print(f"New folder created: {new_folder}")
+    new_folder_path, new_folder_name = make_unique_folder(os.path.join(config['save_model_dir'],"exp"))
+    print(f"New folder created: {new_folder_path}")
+    
 
     # Load a model
     #model = YOLO('yolov8l.yaml')  # build a new model from YAML
@@ -38,7 +39,9 @@ def trainer(config) :
         batch=config['batch_size'],
         lr0=config['learning_rate'],
         lrf=config['learning_rate'],
-        save_dir=new_folder,
+        save=True,
+        project=config['save_model_dir'],
+        name=new_folder_name,
         
         device=[0],
         workers=config['worker'],
