@@ -29,7 +29,7 @@ def inference(config):
         project=config['save_dir'],
         name=new_folder_name,
         save_frames=True
-        #stream=True # derectory
+        #stream=True # directory
         )
     
     
