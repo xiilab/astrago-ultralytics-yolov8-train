@@ -1,6 +1,4 @@
-"""
-Yolov8 train
-"""
+"""Yolov8 train."""
 import os
 import argparse
 from ultralytics import YOLO

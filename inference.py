@@ -3,9 +3,10 @@ import argparse
 from ultralytics import YOLO
 from ultralytics.utils.make_folder import make_unique_folder
 
-def inference(config) :
-    new_folder_path, new_folder_name = make_unique_folder(os.path.join(config['save_dir'],"result_pred"))
-    model = YOLO(config['weights'])  # pretrained YOLOv8n model
+
+def inference(config):
+    new_folder_path, new_folder_name = make_unique_folder(os.path.join(config["save_dir"], "result_pred"))
+    model = YOLO(config["weights"])  # pretrained YOLOv8n model
     model.predict(
         source=config["data_dir"],
         save=True,  # save result
@@ -15,13 +16,13 @@ def inference(config) :
         save_conf=True,
         show_boxes=True,
         show_labels=True,
-        project=config['save_dir'],
+        project=config["save_dir"],
         name=new_folder_name,
-        save_frames=True
-        #stream=True # directory
-        )
-    
-    
+        save_frames=True,
+        # stream=True # directory
+    )
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="YOLOv8 training")
     # user setting
