@@ -26,9 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="YOLOv8 training")
     # user setting
     parser.add_argument("--weights", type=str, default="../weights/yolov8.pt", help="yaml file")
-    parser.add_argument(
-        "--data_dir", type=str, default="analysis image or video path or dir", help="single or folder(multi)"
-    )
+    parser.add_argument("--data_dir", type=str, default="analysis image or video path or dir", help="single or folder(multi)")
     parser.add_argument("--image_size", type=int, default=640, help="input image scale")
     parser.add_argument("--batch_size", type=int, default=1, help="only 1 batch")
     parser.add_argument("--conf_thres", type=float, default=0.25, help="confidence threshold")

@@ -29,7 +29,7 @@ def trainer(config):
     # model = YOLO('yolov8l.yaml')  # build a new model from YAML
     # model = YOLO('yolov8l.pt')  # load a pretrained model (recommended for training)
     model = YOLO(config["model"]).load(config["model_pt"])  # build from YAML and transfer weights
-    model.add_callback("on_train_start", freeze_layer)
+   # model.add_callback("on_train_start", freeze_layer)
 
     # Train the model
     results = model.train(
@@ -62,17 +62,12 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=16, help="number of images per batch (-1 for AutoBatch)")
     parser.add_argument("--learning_rate", type=float, default=0.01, help="output checkpoint, info save_dir")
     parser.add_argument("--save_model_dir", type=str, default="../detect/run", help="output checkpoint, info save_dir")
-
     parser.add_argument("--model", type=str, default="yolov8l.yaml", help="model .yaml default yolov8n.yaml")
     parser.add_argument("--model_pt", type=str, default="../weights/yolov8l.pt", help="pre-trained model path")
     parser.add_argument("--patience", type=int, default=0, help="EarlyStopping patience (epochs without improvement)")
-    parser.add_argument(
-        "--worker", type=int, default=8, help="number of worker threads for data loading (per RANK if DDP)"
-    )
+    parser.add_argument("--worker", type=int, default=8, help="number of worker threads for data loading (per RANK if DDP)")
     parser.add_argument("--pretrained", type=bool, default=False, help="whether to use a pretrained model")
-    parser.add_argument(
-        "--opt", type=str, default="SGD", help="optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']"
-    )
+    parser.add_argument("--opt", type=str, default="SGD", help="optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']")
     parser.add_argument("--single_cls", action="store_true", help="train multi-class data as single-class")
     parser.add_argument("--label_smoothing", type=float, default=0.0, help="Label smoothing epsilon")
     return vars(parser.parse_args())
