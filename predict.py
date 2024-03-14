@@ -28,7 +28,8 @@ def predicter(config) :
         save=True,
         imgsz = config['imgsz'],
         save_dir = new_folder,
-        iou = 0.25
+        iou = 0.7,
+        conf=0.25
     )
     
 
