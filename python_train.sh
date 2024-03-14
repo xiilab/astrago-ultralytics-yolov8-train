@@ -2,12 +2,12 @@
 
 GPU=0
 SAVE_DIR="../weight/yolov8/AstraGO"
-YAML="/DATA/datasets/step3_1_test/step3_1_test.yaml"
+# YAML="/DATA/datasets/step3_1_test/step3_1_test.yaml"
 MODEL="yolov8l.yaml"
 PRETRAIN="../weights/yolov8l.pt"
 
 CUDA_VISIBLE_DEVICES=$GPU python train.py \
-	--data_dir $YAML \
+	# --data_dir $YAML \
 	--model $MODEL \
 	--model_pt $PRETRAIN \
 	--image_size 640 \
