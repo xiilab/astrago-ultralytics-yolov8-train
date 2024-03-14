@@ -64,7 +64,7 @@ def trainer(config) :
 def parse_args():
     parser = argparse.ArgumentParser(description='YOLOv8 training')
     #user setting
-    parser.add_argument('--data_dir', type=str, default="./ultralytics/data/test_pro/COCO.yaml", help="yaml file")    
+    parser.add_argument('--data_dir', type=str, default="../astrago-ultralytics-yolov8-train/ultralytics/cfg/datasets/coco128.yaml", help="yaml file")    
     parser.add_argument('--image_size', type=int, default=640, help="input image scale")
     parser.add_argument('--epochs', type=int, default=100, help="num epochs")
     parser.add_argument('--batch_size', type=int, default=16, help="number of images per batch (-1 for AutoBatch)")
