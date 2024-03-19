@@ -59,7 +59,8 @@ def trainer(config):
     parameter_id = db_handler.insert_prediction_parameter((config['model'], config['model_pt'], config['data_dir'],
                                                            config['image_size'], config['epochs'], config['batch_size'],
                                                            config['learning_rate'], config['save_model_dir'],
-                                                           config['patience'], config['worker'], config['single_cls'],
+                                                           config['patience'], config['worker'], config['opt'],
+                                                           config['single_cls'], config['label_smoothing'],
                                                            config['pretrained']))
     with open(Astrago.csv_file_path, 'r') as file:
         csv_reader = csv.reader(file)
