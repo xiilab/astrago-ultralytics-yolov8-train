@@ -30,7 +30,6 @@ class Astrago(tqdm):
     savemodel_time = 0
     scheduler_time = 0
 
-
     # csv 파일 저장 함수
     @staticmethod
     def save_metrics_to_csv(model_name, param, gpu, FLOPS, class_num, t_img_num, t_instance_num, v_img_num,
@@ -63,6 +62,8 @@ class Astrago(tqdm):
             cpu_usage : cpu 사용률 (%)
         '''
         k8s_info = KubernetesInfo()
+        if epoch == 1:
+            k8s_info.change_estimated_initial_time(remaining)
         k8s_info.change_estimated_remaining_time(remaining)
         with open(Astrago.csv_file_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
@@ -125,7 +126,7 @@ class Astrago(tqdm):
                 Astrago.last_epoch_done = True  # 마지막 에폭이 출력되었음을 표시
 
 
-        else:  # 마지막 에폭이 아닐 때는 출력 및 저장을 수행
+        elif n > 0:  # 마지막 에폭이 아닐 때는 출력 및 저장을 수행
             Astrago.save_metrics_to_csv(Astrago.model_name, Astrago.param, Astrago.gpu, Astrago.FLOPS, class_num,
                                         t_img_num,
                                         t_instance_num, v_img_num, v_instance_num, imgsz, batch, n, preprocess_time,
@@ -145,7 +146,7 @@ class Astrago(tqdm):
             print(f'GPU 메모리 사용량: {gpu_usage:.2f}G')
             print(f'CPU 메모리 사용율: {cpu_usage:.2f}%')
 
-        return tqdm.format_meter(n, total, elapsed, rate=rate, initial=initial, *args, **kwargs)
+        return super().format_meter(n, total, elapsed, rate=rate, initial=initial, *args, **kwargs)
 
     def get_elapsed_preprocess_time(start_time):
         Astrago.preprocess_time = time.time() - start_time

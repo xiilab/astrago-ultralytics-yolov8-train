@@ -7,7 +7,7 @@ from kubernetes import client, config
 class KubernetesInfo:
 
     def __init__(self):
-        config.load_incluster_config()        
+        config.load_incluster_config()
         self.pod_name = os.environ.get("POD_NAME")
         self.pod_namespace = os.environ.get("POD_NAMESPACE")
         self.api_instance = client.CoreV1Api()
@@ -21,6 +21,22 @@ class KubernetesInfo:
             if pod.metadata.annotations is None:
                 pod.metadata.annotations = {}
             pod.metadata.annotations['estimated_remaining_time'] = str(estimated_remaining_time)
+
+            # Pod 업데이트
+            self.api_instance.patch_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace, body=pod)
+            print("Pod의 annotation이 성공적으로 업데이트되었습니다.")
+        except Exception as e:
+            print(f"Pod annotation 업데이트 중 오류 발생: {e}")
+
+    def change_estimated_initial_time(self, estimated_initial_time):
+        try:
+            # Pod 조회
+            pod = self.api_instance.read_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace)
+
+            # 기존 annotation에 새로운 값을 추가 또는 업데이트
+            if pod.metadata.annotations is None:
+                pod.metadata.annotations = {}
+            pod.metadata.annotations['estimated_initial_time'] = str(estimated_initial_time)
 
             # Pod 업데이트
             self.api_instance.patch_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace, body=pod)
