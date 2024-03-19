@@ -146,7 +146,7 @@ class Astrago(tqdm):
             print(f'GPU 메모리 사용량: {gpu_usage:.2f}G')
             print(f'CPU 메모리 사용율: {cpu_usage:.2f}%')
 
-        return super().format_meter(n, total, elapsed, rate=rate, initial=initial, *args, **kwargs)
+        return tqdm.format_meter(n, total, elapsed, rate=rate, initial=initial, *args, **kwargs)
 
     def get_elapsed_preprocess_time(start_time):
         Astrago.preprocess_time = time.time() - start_time
