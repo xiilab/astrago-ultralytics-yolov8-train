@@ -9,11 +9,11 @@ import psutil
 import torch
 import yaml
 from tqdm import tqdm
-from astrago_db import KubernetesInfo
+from .astrago_db import KubernetesInfo
 
 
 class Astrago(tqdm):
-    csv_file_path = "/DATA/yolov8l_test.csv"
+    csv_file_path = "/tmp/epoch_log.csv"
     model_name = 'yolov8l'
     param = 0
     gpu = ''

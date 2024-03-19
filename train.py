@@ -1,8 +1,9 @@
 import argparse
 import os
-
+import csv
 from ultralytics import YOLO
 from ultralytics.utils.astrago_db import MariaDBHandler
+from ultralytics.utils.astrago import Astrago
 
 
 # model freeze
@@ -20,24 +21,8 @@ def freeze_layer(trainer):
 
 
 # save dir filter same folder
-def make_unique_folder(path):
-    path = path.rstrip("/")
-    folder_name = os.path.basename(path)
-    folder_path = os.path.dirname(path)
-    new_folder_path = path
-    i = 1
-    while os.path.exists(new_folder_path):
-        new_folder_name = f"{folder_name}_{i}"
-        new_folder_path = os.path.join(folder_path, new_folder_name)
-        i += 1
-    os.makedirs(new_folder_path)
-    return new_folder_path
-
 
 def trainer(config):
-    new_folder = make_unique_folder(config['save_model_dir'])
-    print(f"New folder created: {new_folder}")
-
     # Load a model
     # model = YOLO('yolov8l.yaml')  # build a new model from YAML
     # model = YOLO('yolov8l.pt')  # load a pretrained model (recommended for training)
@@ -52,7 +37,7 @@ def trainer(config):
         batch=config['batch_size'],
         lr0=config['learning_rate'],
         lrf=config['learning_rate'],
-        project=new_folder,
+        project=config['save_model_dir'],
 
         device=[0],
         workers=config['worker'],
@@ -71,16 +56,21 @@ def trainer(config):
         database='astrago'
     )
     db_handler.connect()
-    parameter_id = db_handler.insert_prediction_parameter(('yolov8l.yaml', '../weights/yolov8l.pt',
-                                                           '../astrago-ultralytics-yolov8-train/ultralytics/cfg/datasets/coco128.yaml',
-                                                           640, 100, 16, 0.01, '../detect/run', 0, 8, 'SGD', True, 0.0,
-                                                           False))
-    db_handler.insert_epoch_log(parameter_id, ('yolov8l.yaml', 8, 'TESLA V100', 235, 8,  # CLASS_NUM
-                                               8, 8, 8, 8, 360,  # IMG_SIZE
-                                               30, 1, 10, 10, 10,  # VALID_TIME
-                                               10, 10, 10, 10, 10,  # REMAINING_TIME
-                                               3, 10
-                                               ))
+    parameter_id = db_handler.insert_prediction_parameter((config['model'], config['model_pt'], config['data_dir'],
+                                                           config['image_size'], config['epochs'], config['batch_size'],
+                                                           config['learning_rate'], config['save_model_dir'],
+                                                           config['patience'], config['worker'], config['single_cls'],
+                                                           config['pretrained']))
+    with open(Astrago.csv_file_path, 'r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)
+        for row in csv_reader:
+            db_handler.insert_epoch_log(parameter_id, (row[0], row[1], row[2], row[3], row[4],
+                                                       row[5], row[6], row[7], row[8], row[9],
+                                                       row[10], row[11], row[12], row[13], row[14],
+                                                       row[15], row[16], row[17], row[18], row[19],
+                                                       row[20], row[21]
+                                                       ))
     db_handler.disconnect()
 
 
