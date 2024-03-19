@@ -1,0 +1,19 @@
+version: '3'
+services:
+  yolov8:
+    image: astrago-hub-test:latest 
+    container_name: astrago-hub      
+    volumes:
+      - ./datasets:/tmp/datasets
+      - ./models:/tmp/models
+      - /root/.kube/config:/root/.kube/config
+    tty: true
+    environment:
+      - POD_NAME=wl-2f3755bc-b980-482d-a081-1f3ba6b97c79-p2d7w
+      - POD_NAMESPACE=yc-test-ns
+      - DB_HOST=10.61.3.12
+      - DB_PORT=30756
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_DATABASE=astrago
+    command: python train.py --data_dir=/tmp/datasets/data.yaml --image_size=360 --epochs=10 --save_model_dir=/tmp/models
