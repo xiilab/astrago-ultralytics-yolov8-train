@@ -49,11 +49,11 @@ def trainer(config):
     )
     model.val()
     db_handler = MariaDBHandler(
-        host='10.61.3.12',
-        port='30756',
-        user='root',
-        password='root',
-        database='astrago'
+        host=os.environ.get("DB_HOST"),
+        port=os.environ.get("DB_PORT"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        database=os.environ.get("DB_DATABASE"),
     )
     db_handler.connect()
     parameter_id = db_handler.insert_prediction_parameter((config['model'], config['model_pt'], config['data_dir'],
