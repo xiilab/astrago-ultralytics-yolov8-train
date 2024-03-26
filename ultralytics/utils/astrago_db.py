@@ -7,42 +7,41 @@ from kubernetes import client, config
 class KubernetesInfo:
 
     def __init__(self):
-        config.load_incluster_config()
+        config.load_kube_config()
         self.pod_name = os.environ.get("POD_NAME")
-        self.pod_namespace = os.environ.get("POD_NAMESPACE")
-        self.api_instance = client.CoreV1Api()
+        self.namespace = os.environ.get("POD_NAMESPACE")
+        self.core_v1_api = client.CoreV1Api()
+        self.batch_v1_api = client.BatchV1Api()
 
-    def change_estimated_remaining_time(self, estimated_remaining_time):
+    def _change_job_annotation(self, job_name, key, value):
+        job = self.batch_v1_api.read_namespaced_job(name=job_name, namespace=self.namespace)
+
+        # 기존 annotation에 새로운 값을 추가 또는 업데이트
+        if job.metadata.annotations is None:
+            job.metadata.annotations = {}
+        job.metadata.annotations[key] = str(value)
+
+        # Pod 업데이트
+        self.batch_v1_api.patch_namespaced_job(name=job_name, namespace=self.namespace, body=job)
+        print("JOB의 annotation이 성공적으로 업데이트되었습니다.")
+
+    def change_remaining_time_annotation(self, estimated_remaining_time):
         try:
             # Pod 조회
-            pod = self.api_instance.read_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace)
-
-            # 기존 annotation에 새로운 값을 추가 또는 업데이트
-            if pod.metadata.annotations is None:
-                pod.metadata.annotations = {}
-            pod.metadata.annotations['estimated_remaining_time'] = str(estimated_remaining_time)
-
-            # Pod 업데이트
-            self.api_instance.patch_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace, body=pod)
-            print("Pod의 annotation이 성공적으로 업데이트되었습니다.")
+            pod = self.core_v1_api.read_namespaced_pod(name=self.pod_name, namespace=self.namespace)
+            job_name = pod.metadata.owner_references[0].name
+            self._change_job_annotation(job_name, 'estimated_remaining_time', estimated_remaining_time)
         except Exception as e:
-            print(f"Pod annotation 업데이트 중 오류 발생: {e}")
+            print(f"JOB annotation 업데이트 중 오류 발생: {e}")
 
     def change_estimated_initial_time(self, estimated_initial_time):
         try:
             # Pod 조회
-            pod = self.api_instance.read_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace)
-
-            # 기존 annotation에 새로운 값을 추가 또는 업데이트
-            if pod.metadata.annotations is None:
-                pod.metadata.annotations = {}
-            pod.metadata.annotations['estimated_initial_time'] = str(estimated_initial_time)
-
-            # Pod 업데이트
-            self.api_instance.patch_namespaced_pod(name=self.pod_name, namespace=self.pod_namespace, body=pod)
-            print("Pod의 annotation이 성공적으로 업데이트되었습니다.")
+            pod = self.core_v1_api.read_namespaced_pod(name=self.pod_name, namespace=self.namespace)
+            job_name = pod.metadata.owner_references[0].name
+            self._change_job_annotation(job_name, 'estimated_initial_time', estimated_initial_time)
         except Exception as e:
-            print(f"Pod annotation 업데이트 중 오류 발생: {e}")
+            print(f"JOB annotation 업데이트 중 오류 발생: {e}")
 
     def get_node_port(self):
         # Kubernetes 클러스터 설정
@@ -169,23 +168,5 @@ class MariaDBHandler:
 
 if __name__ == '__main__':
     client = KubernetesInfo()
-    client.change_estimated_remaining_time(10)
-    db_handler = MariaDBHandler(
-        host='10.61.3.12',
-        port='30756',
-        user='root',
-        password='root',
-        database='astrago'
-    )
-    db_handler.connect()
-    parameter_id = db_handler.insert_prediction_parameter(('yolov8l.yaml', '../weights/yolov8l.pt',
-                                                           '../astrago-ultralytics-yolov8-train/ultralytics/cfg/datasets/coco128.yaml',
-                                                           640, 100, 16, 0.01, '../detect/run', 0, 8, 'SGD', True, 0.0,
-                                                           False))
-    db_handler.insert_epoch_log(parameter_id, ('yolov8l.yaml', 8, 'TESLA V100', 235, 8,  # CLASS_NUM
-                                               8, 8, 8, 8, 360,  # IMG_SIZE
-                                               30, 1, 10, 10, 10,  # VALID_TIME
-                                               10, 10, 10, 10, 10,  # REMAINING_TIME
-                                               3, 10
-                                               ))
-    db_handler.disconnect()
+    client.change_estimated_initial_time(10)
+    client.change_remaining_time_annotation(10)
