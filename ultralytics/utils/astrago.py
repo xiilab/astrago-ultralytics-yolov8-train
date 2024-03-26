@@ -63,8 +63,8 @@ class Astrago(tqdm):
         '''
         k8s_info = KubernetesInfo()
         if epoch == 1:
-            k8s_info.change_estimated_initial_time(remaining)
-        k8s_info.change_estimated_remaining_time(remaining)
+            k8s_info.change_initial_time_annotation(remaining)
+        k8s_info.change_remaining_time_annotation(remaining)
         with open(Astrago.csv_file_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 

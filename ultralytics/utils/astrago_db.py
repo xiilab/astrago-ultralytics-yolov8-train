@@ -34,7 +34,7 @@ class KubernetesInfo:
         except Exception as e:
             print(f"JOB annotation 업데이트 중 오류 발생: {e}")
 
-    def change_estimated_initial_time(self, estimated_initial_time):
+    def change_initial_time_annotation(self, estimated_initial_time):
         try:
             # Pod 조회
             pod = self.core_v1_api.read_namespaced_pod(name=self.pod_name, namespace=self.namespace)
