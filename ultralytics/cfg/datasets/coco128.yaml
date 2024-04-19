@@ -11,7 +11,6 @@
 path: /usr/src/ultralytics/ultralytics/cfg/datasets/coco128 # dataset root dir
 train: /usr/src/ultralytics/ultralytics/cfg/datasets/coco128/images/train2017 # train images (relative to 'path') 128 images
 val: /usr/src/ultralytics/ultralytics/cfg/datasets/coco128/images/train2017 # val images (relative to 'path') 128 images
-test: # test images (optional)
 
 # Classes
 names:

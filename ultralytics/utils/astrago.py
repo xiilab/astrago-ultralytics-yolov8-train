@@ -272,7 +272,7 @@ class Astrago(tqdm):
         class_num = len(data['names'])
         print(f'클래스 수 : {class_num}\n')
 
-        dataset_list = ['train', 'val', 'test']
+        dataset_list = ['train', 'val']
 
         for dataset in dataset_list:
             dataset_path = data[dataset]
@@ -282,7 +282,6 @@ class Astrago(tqdm):
             instance_num = 0
             for file in os.listdir(dataset_path):
                 if file.endswith('.txt'):
-                    print(f"datasetPath : {dataset_path}")
                     txt_path = os.path.join(dataset_path, file)
                     with open(txt_path, 'r') as f:
                         contents = f.readlines()
