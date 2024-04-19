@@ -87,8 +87,8 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float, default=0.01, help="output checkpoint, info save_dir")
     parser.add_argument('--save_model_dir', type=str, default="../detect/run", help="output checkpoint, info save_dir")
 
-    parser.add_argument('--model', type=str, default="yolov8l.yaml", help="model .yaml default yolov8n.yaml")
-    parser.add_argument('--model_pt', type=str, default="../weights/yolov8l.pt", help="pre-trained model path")
+    parser.add_argument('--model', type=str, default="./models/yolov8/yaml/yolov8l.yaml", help="model .yaml default yolov8n.yaml")
+    parser.add_argument('--model_pt', type=str, default="./models/yolov8/pt/yolov8l.pt", help="pre-trained model path")
     parser.add_argument('--patience', type=int, default=0, help='EarlyStopping patience (epochs without improvement)')
     parser.add_argument('--worker', type=int, default=8,
                         help="number of worker threads for data loading (per RANK if DDP)")
