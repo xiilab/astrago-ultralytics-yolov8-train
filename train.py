@@ -79,15 +79,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description='YOLOv8 training')
     # user setting
     parser.add_argument('--data_dir', type=str,
-                        default="../astrago-ultralytics-yolov8-train/ultralytics/cfg/datasets/coco128.yaml",
+                        default="./ultralytics/cfg/datasets/coco128.yaml",
                         help="yaml file")
     parser.add_argument('--image_size', type=int, default=640, help="input image scale")
     parser.add_argument('--epochs', type=int, default=100, help="num epochs")
     parser.add_argument('--batch_size', type=int, default=16, help="number of images per batch (-1 for AutoBatch)")
     parser.add_argument('--learning_rate', type=float, default=0.01, help="output checkpoint, info save_dir")
-    parser.add_argument('--save_model_dir', type=str, default="../detect/run", help="output checkpoint, info save_dir")
+    parser.add_argument('--save_model_dir', type=str, default="./default_train_result", help="output checkpoint, info save_dir")
 
-    parser.add_argument('--model', type=str, default="./models/yolov8/yaml/yolov8l.yaml", help="model .yaml default yolov8n.yaml")
+    parser.add_argument('--model', type=str, default="./models/yolov8/yaml/yolov8l.yaml",
+                        help="model .yaml default yolov8n.yaml")
     parser.add_argument('--model_pt', type=str, default="./models/yolov8/pt/yolov8l.pt", help="pre-trained model path")
     parser.add_argument('--patience', type=int, default=0, help='EarlyStopping patience (epochs without improvement)')
     parser.add_argument('--worker', type=int, default=8,
