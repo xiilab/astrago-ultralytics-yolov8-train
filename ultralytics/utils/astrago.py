@@ -282,6 +282,7 @@ class Astrago(tqdm):
             instance_num = 0
             for file in os.listdir(dataset_path):
                 if file.endswith('.txt'):
+                    print(f"datasetPath : {dataset_path}")
                     txt_path = os.path.join(dataset_path, file)
                     with open(txt_path, 'r') as f:
                         contents = f.readlines()
