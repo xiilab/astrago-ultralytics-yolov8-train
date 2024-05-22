@@ -74,7 +74,11 @@ class Astrago(tqdm):
             password=os.environ.get("DB_PASSWORD"),
             database=os.environ.get("DB_DATABASE"),
         )
-
+        print("남은 시간 데이터 수정 host : " + os.environ.get("DB_HOST"))
+        print("남은 시간 데이터 수정 port : " + os.environ.get("DB_PORT"))
+        print("남은 시간 데이터 수정 user : " + os.environ.get("DB_USER"))
+        print("남은 시간 데이터 수정 pw : " + os.environ.get("DB_PASSWORD"))
+        print("남은 시간 데이터 수정 DB : " + os.environ.get("DB_DATABASE"))
         db_handler.connect()
         workloadResourceName = k8s_info.pod_name
         db_handler.update_workload_remain_time(remaining, workloadResourceName)
