@@ -10,7 +10,7 @@ import torch
 import yaml
 from tqdm import tqdm
 from .astrago_db import KubernetesInfo
-
+from ultralytics.utils.astrago_db import MariaDBHandler
 
 class Astrago(tqdm):
     csv_file_path = "/tmp/epoch_log.csv"
@@ -65,6 +65,20 @@ class Astrago(tqdm):
         if epoch == 1:
             k8s_info.change_initial_time_annotation(remaining)
         k8s_info.change_remaining_time_annotation(remaining)
+
+        # DB TB_WORKLOAD 테이블의 REMAIN_TIME 업데이트
+        db_handler = MariaDBHandler(
+            host=os.environ.get("DB_HOST"),
+            port=os.environ.get("DB_PORT"),
+            user=os.environ.get("DB_USER"),
+            password=os.environ.get("DB_PASSWORD"),
+            database=os.environ.get("DB_DATABASE"),
+        )
+
+        db_handler.connect()
+        workloadResourceName = k8s_info.pod_name
+        db_handler.update_workload_remain_time(remaining, workloadResourceName)
+        db_handler.disconnect()
         with open(Astrago.csv_file_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 

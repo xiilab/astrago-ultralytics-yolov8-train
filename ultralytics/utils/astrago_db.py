@@ -164,7 +164,29 @@ class MariaDBHandler:
             print(f"데이터 삽입 중 오류 발생: {e}")
             # 롤백
             self.conn.rollback()
+    def update_workload_remain_time(self, time, workloadResourceName):
+        """
+        TB_WORKLOAD 테이블에 남은시간을 업데이트하는 메서드입니다.
+        :param values: 삽입할 데이터 값
+        """
+        try:
+            # 데이터 삽입 쿼리 생성
+            sql = """
+            UPDATE TB_WORKLOAD
+            SET REMAIN_TIME = %s  
+            WHERE WORKLOAD_RESOURCE_NAME = %s
+            """
+            # 데이터 삽입
+            self.cursor.execute(sql, (time, workloadResourceName))
 
+            # 변경사항 커밋
+            self.conn.commit()
+            print("데이터가 성공적으로 업데이트 되었습니다.")
+            return self.cursor.lastrowid
+        except Exception as e:
+            print(f"데이터 삽입 중 오류 발생: {e}")
+            # 롤백
+            self.conn.rollback()
 
 if __name__ == '__main__':
     client = KubernetesInfo()
