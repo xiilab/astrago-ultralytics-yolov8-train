@@ -80,7 +80,7 @@ class Astrago(tqdm):
         print("남은 시간 데이터 수정 pw : " + os.environ.get("DB_PASSWORD"))
         print("남은 시간 데이터 수정 DB : " + os.environ.get("DB_DATABASE"))
         db_handler.connect()
-        workloadResourceName = k8s_info.pod_name
+        workloadResourceName = k8s_info.get_job_name()
         db_handler.update_workload_remain_time(remaining, workloadResourceName)
         db_handler.disconnect()
         with open(Astrago.csv_file_path, mode='a', newline='', encoding='utf-8') as file:

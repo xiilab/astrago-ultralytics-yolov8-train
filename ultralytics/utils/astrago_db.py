@@ -25,6 +25,16 @@ class KubernetesInfo:
         self.batch_v1_api.patch_namespaced_job(name=job_name, namespace=self.namespace, body=job)
         print("JOB의 annotation이 성공적으로 업데이트되었습니다.")
 
+    def get_job_name(self):
+        try:
+            # Pod 조회
+            pod = self.core_v1_api.read_namespaced_pod(name=self.pod_name, namespace=self.namespace)
+            job_name = pod.metadata.owner_references[0].name
+            return job_name
+        except Exception as e:
+            print(f"JOB annotation 업데이트 중 오류 발생: {e}")
+            return ""
+
     def change_remaining_time_annotation(self, estimated_remaining_time):
         try:
             # Pod 조회
