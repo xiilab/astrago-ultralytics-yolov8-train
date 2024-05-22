@@ -180,7 +180,7 @@ class MariaDBHandler:
             print("남은 시간 데이터 업데이트 쿼리 : " + sql)
             print("남은 시간 데이터 업데이트 쿼리 파라미터 time : " + time)
             print("남은 시간 데이터 업데이트 쿼리 파라미터 workloadResourceName : " + workloadResourceName)
-            self.cursor.execute(sql, (time, workloadResourceName))
+            self.cursor.execute(sql, (str(time), workloadResourceName))
             # 변경사항 커밋
             self.conn.commit()
             print("데이터가 성공적으로 업데이트 되었습니다.")
