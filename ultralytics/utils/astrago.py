@@ -76,7 +76,15 @@ class Astrago(tqdm):
         )
         db_handler.connect()
         workloadResourceName = k8s_info.get_job_name()
-        db_handler.update_workload_remain_time(remaining, workloadResourceName)
+        #job 종류 조회
+        workload_type = db_handler.find_workload_type(workloadResourceName)
+        if workload_type == "BATCH":
+            #job update
+            db_handler.update_workload_job_remain_time(remaining, workloadResourceName)
+        elif workload_type == "DISTRIBUTED":
+            #distribute update
+            db_handler.update_workload_distributed_remain_time(remaining, workloadResourceName)
+
         db_handler.disconnect()
         with open(Astrago.csv_file_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)

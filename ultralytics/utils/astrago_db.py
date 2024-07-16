@@ -174,7 +174,7 @@ class MariaDBHandler:
             print(f"데이터 삽입 중 오류 발생: {e}")
             # 롤백
             self.conn.rollback()
-    def update_workload_remain_time(self, time, workloadResourceName):
+    def update_workload_job_remain_time(self, time, workloadResourceName):
         """
         TB_WORKLOAD 테이블에 남은시간을 업데이트하는 메서드입니다.
         :param values: 삽입할 데이터 값
@@ -182,7 +182,7 @@ class MariaDBHandler:
         try:
             # 데이터 삽입 쿼리 생성
             sql = """
-            UPDATE TB_WORKLOAD
+            UPDATE TB_WORKLOAD_JOB
             SET REMAIN_TIME = %s  
             WHERE WORKLOAD_RESOURCE_NAME = %s
             """
@@ -196,6 +196,55 @@ class MariaDBHandler:
             print(f"데이터 삽입 중 오류 발생: {e}")
             # 롤백
             self.conn.rollback()
+
+
+    def update_workload_distributed_remain_time(self, time, workloadResourceName):
+        """
+        TB_WORKLOAD 테이블에 남은시간을 업데이트하는 메서드입니다.
+        :param values: 삽입할 데이터 값
+        """
+        try:
+            # 데이터 삽입 쿼리 생성
+            sql = """
+            UPDATE TB_WORKLOAD_DISTRIBUTED_JOB
+            SET REMAIN_TIME = %s  
+            WHERE WORKLOAD_RESOURCE_NAME = %s
+            """
+            # 데이터 삽입
+            self.cursor.execute(sql, (time, workloadResourceName))
+            # 변경사항 커밋
+            self.conn.commit()
+            print("데이터가 성공적으로 업데이트 되었습니다.")
+            return self.cursor.lastrowid
+        except Exception as e:
+            print(f"데이터 삽입 중 오류 발생: {e}")
+            # 롤백
+            self.conn.rollback()
+
+    def find_workload_type(self, workloadResourceName):
+        """
+        TB_WORKLOAD 테이블에서 워크로드 타입을 조회하는 메서드입니다.
+        """
+        try:
+            # 데이터 삽입 쿼리 생성
+            sql = """
+            SELECT tw.WORKLOAD_TYPE
+            FROM TB_WORKLOAD tw 
+            WHERE WORKLOAD_RESOURCE_NAME = %s
+            """
+            # 데이터 삽입
+            self.cursor.execute(sql, (workloadResourceName,))
+            result = self.cursor.fetchone()
+            if result:
+            # 결과 반환
+                return result[0]
+            else:
+            # 결과가 없을 때 None 반환
+                return None
+        except Exception as e:
+            print(f"데이터 조회 중 오류 발생: {e}")
+            return None
+
 
 if __name__ == '__main__':
     client = KubernetesInfo()
