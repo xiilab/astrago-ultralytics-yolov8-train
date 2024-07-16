@@ -182,9 +182,10 @@ class MariaDBHandler:
         try:
             # 데이터 삽입 쿼리 생성
             sql = """
-            UPDATE TB_WORKLOAD_JOB
-            SET REMAIN_TIME = %s  
-            WHERE WORKLOAD_RESOURCE_NAME = %s
+            UPDATE TB_WORKLOAD_JOB twj
+            JOIN TB_WORKLOAD tw ON tw.WORKLOAD_ID = twj.WORKLOAD_ID 
+            SET twj.REMAIN_TIME = %s
+            WHERE tw.WORKLOAD_RESOURCE_NAME = %s
             """
             # 데이터 삽입
             self.cursor.execute(sql, (time, workloadResourceName))
@@ -206,9 +207,10 @@ class MariaDBHandler:
         try:
             # 데이터 삽입 쿼리 생성
             sql = """
-            UPDATE TB_WORKLOAD_DISTRIBUTED_JOB
-            SET REMAIN_TIME = %s  
-            WHERE WORKLOAD_RESOURCE_NAME = %s
+            UPDATE TB_WORKLOAD_DISTRIBUTED_JOB twdj
+            JOIN TB_WORKLOAD tw ON tw.WORKLOAD_ID = twdj.WORKLOAD_ID 
+            SET twdj.REMAIN_TIME = %s
+            WHERE tw.WORKLOAD_RESOURCE_NAME = %s
             """
             # 데이터 삽입
             self.cursor.execute(sql, (time, workloadResourceName))
