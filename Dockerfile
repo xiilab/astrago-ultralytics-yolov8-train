@@ -28,7 +28,10 @@ WORKDIR /usr/src/ultralytics
 #RUN git clone https://github.com/ultralytics/ultralytics -b main /usr/src/ultralytics
 #ADD https://github.com/ultralytics/assets/releases/download/v8.1.0/yolov8n.pt /usr/src/ultralytics/
 ADD . / /usr/src/ultralytics
-ADD https://github.com/ultralytics/assets/releases/download/v8.1.0/yolov8n.pt /usr/src/ultralytics/
+#ADD https://github.com/ultralytics/assets/releases/download/v8.1.0/yolov8n.pt /usr/src/ultralytics/
+ADD https://github.com/ultralytics/assets/releases/download/v8.1.0/yolov8n.pt models/yolov8/pt/yolov8l.pt
+ADD https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5l.pt models/yolov5/pt/yolov5l.pt
+
 
 # Install pip packages
 RUN python3 -m pip install --upgrade pip wheel
