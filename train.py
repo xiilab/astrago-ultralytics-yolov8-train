@@ -2,7 +2,6 @@ import argparse
 import os
 import csv
 from ultralytics import YOLO
-from ultralytics.utils.astrago_db import MariaDBHandler
 from ultralytics.utils.astrago import Astrago
 
 
@@ -48,31 +47,6 @@ def trainer(config):
         patience=config['patience'],
     )
     model.val()
-    db_handler = MariaDBHandler(
-        host=os.environ.get("DB_HOST"),
-        port=os.environ.get("DB_PORT"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASSWORD"),
-        database=os.environ.get("DB_DATABASE"),
-    )
-    db_handler.connect()
-    parameter_id = db_handler.insert_prediction_parameter((config['model'], config['model_pt'], config['data_dir'],
-                                                           config['image_size'], config['epochs'], config['batch_size'],
-                                                           config['learning_rate'], config['save_model_dir'],
-                                                           config['patience'], config['worker'], config['opt'],
-                                                           config['single_cls'], config['label_smoothing'],
-                                                           config['pretrained']))
-    with open(Astrago.csv_file_path, 'r') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader)
-        for row in csv_reader:
-            db_handler.insert_epoch_log(parameter_id, (row[0], row[1], row[2], row[3], row[4],
-                                                       row[5], row[6], row[7], row[8], row[9],
-                                                       row[10], row[11], row[12], row[13], row[14],
-                                                       row[15], row[16], row[17], row[18], row[19],
-                                                       row[20], row[21]
-                                                       ))
-    db_handler.disconnect()
 
 
 def parse_args():
